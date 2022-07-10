@@ -1,0 +1,5 @@
+package fbauth
+
+func InitAuth() {
+
+}
