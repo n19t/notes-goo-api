@@ -2,6 +2,7 @@ package tile
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"time"
 
@@ -18,15 +19,15 @@ func (h *handler) fetchAll(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
-	client, _ := h.dbs["bitkub"].(*mongo.Client)
-	col := client.Database("").Collection("")
+	client, _ := h.dbs["notes-goo"].(*mongo.Database)
+	col := client.Collection("tile")
 	cur, err := col.Find(context.TODO(), bson.M{})
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 
 	if err = cur.All(ctx, &tile); err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 
 	if err != nil {

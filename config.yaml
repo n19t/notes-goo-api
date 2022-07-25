@@ -1,0 +1,10 @@
+port: :3000
+dbs:
+  - type: Mongo
+    name: notes-goo
+    host: cluster0.0z4ce.mongodb.net
+    username: admin
+    password: P@ssw0rd
+    database: notes-goo
+
+   

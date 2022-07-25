@@ -1,50 +1,51 @@
 package config
 
 import (
-	"encoding/json"
-	"fmt"
 	"io/ioutil"
-	"os"
+	"log"
+	"notes-goo-api/internal/env"
+	"path/filepath"
+
+	"gopkg.in/yaml.v2"
 )
 
 type ConfigDb struct {
-	Type     string
-	Name     string
-	Host     string
-	Username string
-	Password string
-	Port     string
-	Database string
-	Driver   string
+	Type     string `yaml:"type"`
+	Name     string `yaml:"name"`
+	Host     string `yaml:"host"`
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
+	Port     string `yaml:"port"`
+	Database string `yaml:"database"`
+	Driver   string `yaml:"driver"`
 }
 
 type Config struct {
-	Port string
-	Dbs  []ConfigDb
+	Port string     `yaml:"port"`
+	Dbs  []ConfigDb `yaml:"dbs"`
 }
 
-func ReadConfig(path string) (*Config, error) {
+var (
+	path = env.GetEnvVariable("CONFIG_FILE")
+)
 
-	var config *Config
+func ReadConfig() (*Config, error) {
+	var config Config
 
 	if path == "" {
-		path = "../config.json"
+		path = "./config.yaml"
 	}
 
-	// Open our jsonFile
-	jsonFile, err := os.Open(path)
-	// if we os.Open returns an error then handle it
+	filename, _ := filepath.Abs(path)
+	byteValue, err := ioutil.ReadFile(filename)
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 
-	fmt.Println("Successfully Opened", path)
-	// defer the closing of our jsonFile so that we can parse it later on
-	defer jsonFile.Close()
+	err = yaml.Unmarshal(byteValue, &config)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-
-	json.Unmarshal([]byte(byteValue), &config)
-
-	return config, err
+	return &config, nil
 }
